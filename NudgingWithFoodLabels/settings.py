@@ -29,10 +29,11 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 SECRET_KEY = 'gasdfasdgae-supersecret-donotsharethis-important-!!!!#'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-ALLOWED_HOSTS = ['127.0.0.1','0.0.0.0', 'localhost','newsresearchuib.herokuapp.com', 'newsresearch.mediafutures.no', '158.37.65.236'] # 158.39.201.22 #127.0.0.1', 'localhost'
+DEBUG = False
+#ALLOWED_HOSTS = ['127.0.0.1','0.0.0.0', 'localhost','newsresearchuib.herokuapp.com', 'newsresearch.mediafutures.no', '158.37.65.236'] # 158.39.201.22 #127.0.0.1', 'localhost'
+ALLOWED_HOSTS = ['*']
 #CSRF_TRUSTED_ORIGINS = ['https://newsresearch.mediafutures.no']
-CSRF_TRUSTED_ORIGINS = ['newsresearchuib.herokuapp.com']
+#CSRF_TRUSTED_ORIGINS = ['newsresearchuib.herokuapp.com']
 
 # Application definition
 
