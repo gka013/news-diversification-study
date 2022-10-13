@@ -1,4 +1,4 @@
-from tkinter.tix import Select
+#from tkinter.tix import Select
 from django import forms
 from django.core.exceptions import ValidationError
 from django.db import close_old_connections, models
