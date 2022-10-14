@@ -95,10 +95,22 @@ WSGI_APPLICATION = 'NudgingWithFoodLabels.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',  #PostgreSQL
+        'NAME': 'DEMOjeng',  
+        'USER': 'postgres',  
+        'PASSWORD': 'Jen637839g', 
+        'HOST': 'localhost', 
+        'PORT': '5433'  
     }
 }
+
+
+#DATABASES = {
+    #'default': {
+        #'ENGINE': 'django.db.backends.sqlite3',
+        #'NAME': BASE_DIR / 'db.sqlite3',
+    #}
+#}
 db_from_env = dj_database_url.config()
 DATABASES['default'].update(db_from_env)
 

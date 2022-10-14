@@ -89,7 +89,8 @@ def personal_info(request):
 def ghs_fk(request):
     global Sub_100Articals
     Sub_100Articals = []
-    Sub_100Articals= sample(range(1, 101), 10)
+    #Sub_100Articals= sample(range(1, 101), 10)
+    Sub_100Articals= sample(range(101, 201), 10)
     print (Sub_100Articals)
     
     try:

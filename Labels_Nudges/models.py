@@ -7,6 +7,7 @@ from .choices import *
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django_countries.fields import CountryField
 from multiselectfield import MultiSelectField
+from django.utils import timezone
 
 # Create your models here.
 
@@ -19,6 +20,7 @@ class Personal_info(models.Model):
         default='Personal_info')
 
     created = models.DateTimeField(auto_now_add=True)
+    #created = models.DateTimeField(default=timezone.now)
 
     age = models.CharField(max_length=120,
                            choices=Age_choices,
@@ -276,19 +278,19 @@ class UnhealthyRecipe(models.Model):
 	
 class ClimateNews(models.Model):
     id = models.AutoField(primary_key=True)
-    article_url = models.CharField(max_length=500,default="Some String")
-    title = models.CharField( max_length=500,default="Some String")
-    author = models.CharField( max_length=100,default="Some String")
-    type = models.CharField( max_length=50,default="Some String")
-    category = models.CharField( max_length=50,default="Some String")
-    subcategory = models.CharField(max_length=100,default="Some String")
-    text = models.CharField(max_length=4000,default="Some String")
-    date = models.CharField(max_length=100,default="Some String")
-    time = models.CharField(max_length=100,default="Some String")
-    image_url = models.CharField(max_length=500,default="Some String")
-    image_caption = models.CharField(max_length=100,default="Some String")
-    author_bio = models.CharField(max_length=1000,default="Some String")
-    subtype = models.CharField(max_length=100,default="Some String")
+    article_url = models.CharField(max_length=50000,default="Some String")
+    title = models.CharField( max_length=50000,default="Some String")
+    author = models.CharField( max_length=10000,default="Some String")
+    type = models.CharField( max_length=50000,default="Some String")
+    category = models.CharField( max_length=50000,default="Some String")
+    subcategory = models.CharField(max_length=10000,default="Some String")
+    text = models.CharField(max_length=40000,default="Some String")
+    date = models.CharField(max_length=10000,default="Some String")
+    time = models.CharField(max_length=10000,default="Some String")
+    image_url = models.CharField(max_length=50000,default="Some String")
+    image_caption = models.CharField(max_length=10000,default="Some String")
+    author_bio = models.CharField(max_length=10000,default="Some String")
+    subtype = models.CharField(max_length=10000,default="Some String")
 
     class Meta:
         verbose_name = 'ClimateNews'
