@@ -27,7 +27,7 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'gasdfasdgae-supersecret-donotsharethis-important-!!!!#'
-
+SESSION_ENGINE= 'django.contrib.sessions.backends.cached_db'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 #ALLOWED_HOSTS = ['127.0.0.1','0.0.0.0', 'localhost','newsresearchuib.herokuapp.com', 'newsresearch.mediafutures.no', '158.37.65.236'] # 158.39.201.22 #127.0.0.1', 'localhost'
