@@ -284,7 +284,7 @@ class ClimateNews(models.Model):
     type = models.CharField( max_length=50000,default="Some String")
     category = models.CharField( max_length=50000,default="Some String")
     subcategory = models.CharField(max_length=10000,default="Some String")
-    text = models.CharField(max_length=40010,default="Some String")
+    text = models.CharField(max_length=40020,default="Some String")
     date = models.CharField(max_length=10000,default="Some String")
     time = models.CharField(max_length=10000,default="Some String")
     image_url = models.CharField(max_length=50000,default="Some String")
