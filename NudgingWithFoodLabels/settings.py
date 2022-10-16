@@ -27,7 +27,7 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'gasdfasdgae-supersecret-donotsharethis-important-!!!!#'
-SESSION_ENGINE= "django.contrib.sessions.backends.cache"
+#SESSION_ENGINE= "django.contrib.sessions.backends.cache"
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 #ALLOWED_HOSTS = ['127.0.0.1','0.0.0.0', 'localhost','newsresearchuib.herokuapp.com', 'newsresearch.mediafutures.no', '158.37.65.236'] # 158.39.201.22 #127.0.0.1', 'localhost'
@@ -93,24 +93,26 @@ WSGI_APPLICATION = 'NudgingWithFoodLabels.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
+#DATABASES = {
+    #'default': {
+        #'ENGINE': 'django.db.backends.postgresql_psycopg2', 
+         #PostgreSQL 'ENGINE': 'django.db.backends.postgresql',
+        #'NAME': 'DEMOjeng',  
+        #'USER': 'postgres',  
+        #'PASSWORD': 'Jen637839g', 
+        #'HOST': 'localhost', 
+        #'PORT': '5433'  
+   # }
+#}
+
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',  #PostgreSQL
-        'NAME': 'DEMOjeng',  
-        'USER': 'postgres',  
-        'PASSWORD': 'Jen637839g', 
-        'HOST': 'localhost', 
-        'PORT': '5433'  
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
-
-#DATABASES = {
-    #'default': {
-        #'ENGINE': 'django.db.backends.sqlite3',
-        #'NAME': BASE_DIR / 'db.sqlite3',
-    #}
-#}
 db_from_env = dj_database_url.config()
 DATABASES['default'].update(db_from_env)
 

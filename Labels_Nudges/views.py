@@ -89,8 +89,8 @@ def personal_info(request):
 def ghs_fk(request):
     global Sub_100Articals
     Sub_100Articals = []
-    #Sub_100Articals= sample(range(1, 101), 10)
-    Sub_100Articals= sample(range(101, 201), 10)
+    Sub_100Articals= sample(range(1, 101), 10)
+    #Sub_100Articals= sample(range(101, 201), 10)
     print (Sub_100Articals)
     
     try:
@@ -446,6 +446,7 @@ Sub_100Articals=[]
 Sub_100ArticalsDict= {}
 #Sub_100Articals= sample(range(1, 101), 10)
 #Sub_100Articals2=Sub_100Articals
+print ("Globel Sub_100Articals be called:")
 print (Sub_100Articals)
 def choice_evaluation(request):
     global Sub_100Articals
@@ -455,16 +456,24 @@ def choice_evaluation(request):
         personDict = request.session['person_id'] # Jeng: Here is the person ID for the Dict and will to be the KEY in Sub_100ArticalsDict below
         
         #Sub_100ArticalsDict = {personDict: Sub_100Articals}
-        Sub_100ArticalsDict.update({personDict: Sub_100Articals}) # Jeng: Here I save the 10 news based on different person ID, KEY is person ID Value is 10 NEWS
+        print (' Back to choice_evaluation')
+        print (' Sub_100ArticalsDict.update({personDict: Sub_100Articals}) be called:')
+        if request.method == 'POST':
+            print ("POST")
+        else:
+            Sub_100ArticalsDict.update({personDict: Sub_100Articals})
+        print ('The Sub_100Articals now is:')
+        print (Sub_100Articals)
+        print ("After reset Sub_100Articals is:")
+        #Sub_100ArticalsTemp = Sub_100Articals # Jeng: Here I save the 10 news based on different person ID, KEY is person ID Value is 10 NEWS
+        #Sub_100Articals = []
         print ('The Sub_100ArticalsDict for this person ID below is:')
         print (Sub_100ArticalsDict[personDict])
         print ('The NEWS ID for this page is:')
         print (Sub_100ArticalsDict[personDict][0])
         print ('The Sub_100ArticalsDict for all is:')
         print (Sub_100ArticalsDict)
-        #global size10
-        print ('The Sub_100Articals below is:')
-        print (Sub_100Articals)
+       
         #Sub_100Articals= sample(range(1, 101), 10) # Set a global list involving random 10 news when this function is loaded, and preduce 10 sampling news for other functions from 100 datasets, to narrow down the scope.
         i1 = Sub_100ArticalsDict[personDict][0]
         #i1 = Sub_100Articals[0]
