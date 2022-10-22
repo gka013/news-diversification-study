@@ -12,31 +12,30 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 import os
-import django_heroku
+
 import django.core.wsgi 
 # import django_heroku
 from pathlib import Path
 import dj_database_url
-from decouple import config
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 #BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'gasdfasdgae-supersecret-donotsharethis-important-!!!!#'
-#SESSION_ENGINE= "django.contrib.sessions.backends.cache"
+#SECRET_KEY = '468710d2a478cbe4f2d2aef7b36ce4f63066c85a1f45227e159f0f2ce4f23b2b92de60724f54aaac'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-#ALLOWED_HOSTS = ['127.0.0.1','0.0.0.0', 'localhost','newsresearchuib.herokuapp.com', 'newsresearch.mediafutures.no', '158.37.65.236'] # 158.39.201.22 #127.0.0.1', 'localhost'
-ALLOWED_HOSTS = ['*','newsresearchuib.herokuapp.com']
+#ALLOWED_HOSTS = ['127.0.0.1','0.0.0.0', 'localhost','newsstudy.mediafutures.no', 'newsresearch.mediafutures.no', '158.37.65.236'] # 158.39.201.22 #127.0.0.1', 'localhost'
+ALLOWED_HOSTS = ['*'] # 158.39.201.22 #127.0.0.1', 'localhost'
 #CSRF_TRUSTED_ORIGINS = ['https://newsresearch.mediafutures.no']
-CSRF_TRUSTED_ORIGINS = ['https://newsresearchuib.herokuapp.com']
+CSRF_TRUSTED_ORIGINS = ['https://newsstudy.mediafutures.no','https://newsstudy.mediafutures.no','http://158.37.65.251:8001',]
 
 # Application definition
-
+#from NudgingWithFoodLabels import apps #Jeng new add
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -93,26 +92,12 @@ WSGI_APPLICATION = 'NudgingWithFoodLabels.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-#DATABASES = {
-    #'default': {
-        #'ENGINE': 'django.db.backends.postgresql_psycopg2', 
-         #PostgreSQL 'ENGINE': 'django.db.backends.postgresql',
-        #'NAME': 'DEMOjeng',  
-        #'USER': 'postgres',  
-        #'PASSWORD': 'Jen637839g', 
-        #'HOST': 'localhost', 
-        #'PORT': '5433'  
-   # }
-#}
-
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
 db_from_env = dj_database_url.config()
 DATABASES['default'].update(db_from_env)
 
@@ -161,5 +146,4 @@ STATICFILES_DIRS = [ os.path.join(BASE_DIR, 'static'), ]
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-django_heroku.settings(locals())
 
