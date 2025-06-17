@@ -902,51 +902,55 @@ def ghs_fk2(request):
     })
 
 
+# ── Configure your two “complete” URLs here ────────────────────────
+COMPLETION_LINKS = {
+    1: "https://app.prolific.com/submissions/complete?cc=C11ZJVQL",  # Phase 1 completion code
+    2: "https://app.prolific.com/submissions/complete?cc=CR7K18NX"  # Phase 2 completion code
+}
+# ─────────────────────────────────────────────────────────────────
+
 def redemption(request, phase):
     pid = request.session.get('person_id')
     if not pid:
         return redirect('Labels_Nudges:home')
-
     person = get_object_or_404(Personal_info, id=pid)
 
-    # 1) Grab the Prolific ID out of session
-    prolific_id = request.session.get('prolific_username')
-    if not prolific_id:
-        # fallback just in case
-        prolific_id = person.prolific_username or ''
+    # 1) Grab the Prolific ID from session (fallback to model)
+    prolific_id = request.session.get('prolific_username') or getattr(person, 'prolific_username', '')
 
-    # 2) Mark them complete and store it
+    # 2) Mark them complete in your DB
     code_field = f"redemption_code_phase{phase}"
     setattr(person, code_field, prolific_id)
-    setattr(person, f"phase_{['one', 'two', 'three'][phase - 1]}_complete", True)
+    setattr(person, f"phase_{['one','two','three'][phase-1]}_complete", True)
     person.save()
+    logger.info("Person %s completed phase %d, code=%s", pid, phase, prolific_id)
 
-    # 3) Clear out just the news bits
-    for key in ['selected_articles', 'selected_article_ids',
-                'article_clusters', 'clicked_articles_list']:
-        request.session.pop(key, None)
-
-    # 4) Decide where to go next
-    if phase < 2:
-        next_view_name = {1: 'Labels_Nudges:topic_preference'}[phase]
-        next_phase_num = phase + 1
+    # 3) Build the correct Prolific URL
+    base = COMPLETION_LINKS.get(phase)
+    if not base:
+        # fallback: just link home
+        complete_url = reverse('Labels_Nudges:home')
     else:
-        next_view_name = 'Labels_Nudges:thank_u'
-        next_phase_num = None
+        complete_url = f"{base}"
 
-    # 5) Show the “code” (which is the Prolific PID)
+    # 4) Clear out news‐related session state
+    for k in ('selected_articles','selected_article_ids','article_clusters','saved_articles'):
+        request.session.pop(k, None)
+
+    # 5) Decide what your “internal next” is
+    if phase == 1:
+        next_view = 'Labels_Nudges:topic_preference'
+        next_phase = 2
+    else:
+        next_view = 'Labels_Nudges:thank_u'
+        next_phase = None
+
     return render(request, 'Labels_Nudges/redemption.html', {
-        'steps': [
-            'Start',
-            'Personal Info',
-            'News Preferences',
-            'Evaluation',
-            'Redemption',
-        ],
-        'current_phase': phase,
-        'redemption_code': prolific_id,
-        'next_view_name': next_view_name,
-        'next_phase_num': next_phase_num,
+        'current_phase':    phase,
+        'next_phase_num':   next_phase,
+        'next_view_name':   next_view,
+        'prolific_code':    prolific_id,
+        'complete_url':     complete_url,
     })
 
 
@@ -1365,9 +1369,9 @@ def thank_u(request):
     # remove only that key
     request.session.pop('session_id', None)
 
-    # render the thank-you page with the code
-    return render(request, 'Labels_Nudges/thank_u.html', {
-        'final_code': final_code
+    complete_url = COMPLETION_LINKS.get(2, reverse('Labels_Nudges:home'))
+    return render(request, "Labels_Nudges/thank_u.html", {
+        "complete_url": complete_url,
     })
 
 
