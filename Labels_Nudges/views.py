@@ -12,6 +12,7 @@ from django import forms
 from django.forms import formset_factory
 from django.db.models import Count
 from datetime import datetime as dt, timedelta, timezone
+from datetime import timezone as dt_timezone
 from django.utils import timezone as django_timezone
 from requests.exceptions import HTTPError
 from .recommender import get_phase2_feed_custom
@@ -498,7 +499,7 @@ def choice_evaluation(request):
         if raw_start:
             try:
                 ms = int(raw_start)
-                phase1_start = dt.fromtimestamp(ms / 1000.0, tz=django_timezone.utc)
+                phase1_start = dt.fromtimestamp(ms / 1000.0, tz=dt_timezone.utc)
             except:
                 phase1_start = None
 
@@ -708,7 +709,7 @@ def choice_evaluation2(request):
         # --- THIS IS THE CORRECTED LINE ---
         # We now use timezone.utc from the standard library
         phase2_start = dt.fromtimestamp(int(raw_start) / 1000.0,
-                                        tz=timezone.utc) if raw_start and raw_start.isdigit() else None
+                                        tz=dt.timezone.utc) if raw_start and raw_start.isdigit() else None
         # ------------------------------------
 
         raw_saved_articles = request.POST.get('saved_articles', '[]')
@@ -739,7 +740,7 @@ def choice_evaluation2(request):
                 "explore": art.get("explore", False),
                 "source": art.get("source_name") or art.get("clean_url") or "",
                 "topics": topics,
-                "clicked_at": dt.now(timezone.utc).isoformat(),
+                "clicked_at": dt.now(dt.timezone.utc).isoformat(),
             })
 
         total_clicked = len(click_data)
@@ -752,7 +753,7 @@ def choice_evaluation2(request):
             defaults={
                 "session_id": request.session.session_key or '',
                 "click_data": click_data,
-                "clicked_at": dt.now(timezone.utc),
+                "clicked_at": dt.now(dt.timezone.utc),
                 "phase2_start": phase2_start,
                 "phase2_elapsed": elapsed2,
                 "percent_familiar": percent_familiar,
