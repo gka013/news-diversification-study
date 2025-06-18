@@ -854,10 +854,15 @@ def ghs_fk2(request):
     person = get_object_or_404(Personal_info, id=pid)
 
     # 1) Fetch-or-create our one Ghs_fk2 row
+    # --- MODIFIED: Added prolific_id to the creation defaults ---
     ghs, created = Ghs_fk2.objects.get_or_create(
         person=person,
-        defaults={'session_id': request.session.get('participant_session_id', '')}
+        defaults={
+            'session_id': request.session.get('participant_session_id', ''),
+            'prolific_id': person.prolific_username  # Sets it on creation
+        }
     )
+    # -----------------------------------------------------------
 
     # 2) How many rounds have we already done?
     done = len(ghs.iterations)
@@ -886,12 +891,19 @@ def ghs_fk2(request):
             }
             ghs.iterations.append(entry)
             ghs.session_id = request.session.get('participant_session_id', '')
+
+            # --- ADDED THIS LINE, as per the guide ---
+            # Ensures the prolific_id is always up-to-date on every save.
+            ghs.prolific_id = person.prolific_username
+            # ----------------------------------------
+
             ghs.save()
 
             # 4) Mark the right phase flag and issue code
             if current_phase == 1:
                 person.phase_one_complete = True
                 person.redemption_code_phase1 = generate_redemption_code()
+                person.last_home = timezone.now()  # Start the 2-day clock now
                 person.save()
                 # After round 1, go to redemption for phase 1
                 return redirect('Labels_Nudges:redemption', phase=1)
