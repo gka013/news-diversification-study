@@ -11,7 +11,8 @@ from sys import prefix
 from django import forms
 from django.forms import formset_factory
 from django.db.models import Count
-from datetime import datetime as dt, timedelta, timezone
+import datime as dt
+from datetime import timedelta
 from datetime import timezone as dt_timezone
 from django.utils import timezone as django_timezone
 from requests.exceptions import HTTPError
