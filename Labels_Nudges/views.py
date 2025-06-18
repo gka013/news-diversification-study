@@ -711,7 +711,7 @@ def choice_evaluation2(request):
         phase2_start = None
         if raw_start and raw_start.isdigit():
             ms = int(raw_start)
-            phase2_start = dt.datetime.fromtimestamp(ms / 1000.0, tz=dt_timezone.utc)
+            phase2_start = datetime.fromtimestamp(ms / 1000.0, tz=dt_timezone.utc)
 
         raw_saved = request.POST.get('saved_articles', '[]')
         try:
@@ -798,6 +798,7 @@ def choice_evaluation2(request):
         'form': form,
         'saved_articles_json': json.dumps([]),
     })
+
 
 
 
