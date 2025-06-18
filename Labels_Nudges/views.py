@@ -12,7 +12,7 @@ from django import forms
 from django.forms import formset_factory
 from django.db.models import Count
 from datetime import datetime, timedelta
-from django.utils import django_timezone
+from django.utils import timezone
 from requests.exceptions import HTTPError
 from .recommender import get_phase2_feed_custom
 import logging
