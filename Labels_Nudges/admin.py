@@ -203,6 +203,7 @@ class Ghs_fkAdmin2(admin.ModelAdmin):
         'person',
         'session_id',
         'iterations',
+        'prolific_id'
     )
     actions = [export_as_csv_action("CSV Export")]
 
