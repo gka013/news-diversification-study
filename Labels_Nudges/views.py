@@ -802,7 +802,8 @@ def choice_evaluation2(request):
             'form': form,
             'saved_articles_json': json.dumps([]),
         })
-
+    
+    
 def generate_redemption_code(length=8):
     # You could adapt this to your needs.
     return ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(length))
