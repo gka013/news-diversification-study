@@ -687,7 +687,7 @@ def get_phase2_feed_by_score(person, days_back=1, page_size=30):
 
 
 def choice_evaluation2(request):
-    # --- 1) Standard Participant and Route Guards ---
+    # 1) Standard Participant and Route Guards
     pid = request.session.get('person_id')
     if not pid:
         return redirect('Labels_Nudges:home')
@@ -699,7 +699,7 @@ def choice_evaluation2(request):
     if person.phase_two_complete:
         return redirect('Labels_Nudges:thank_u')
 
-    # --- 2) POST Request Logic: Handle the user's form submission ---
+    # 2) POST Request Logic: Handle the user's form submission
     if request.method == 'POST':
         phase2_articles = request.session.get('phase2_articles', [])
 
@@ -707,11 +707,8 @@ def choice_evaluation2(request):
         raw_elapsed = request.POST.get('phase2_elapsed')
         elapsed2 = int(raw_elapsed) if raw_elapsed and raw_elapsed.isdigit() else None
 
-        # --- THIS IS THE CORRECTED LINE ---
-        # We now use timezone.utc from the standard library
-        phase2_start = dt.datetime.fromtimestamp(int(raw_start) / 1000.0,
-                                        tz=dt.timezone.utc) if raw_start and raw_start.isdigit() else None
-        # ------------------------------------
+        phase2_start = dt.fromtimestamp(int(raw_start) / 1000.0,
+                                        tz=timezone.utc) if raw_start and raw_start.isdigit() else None
 
         raw_saved_articles = request.POST.get('saved_articles', '[]')
         try:
@@ -734,6 +731,7 @@ def choice_evaluation2(request):
             if theme:
                 topics.append(theme)
 
+            # --- CORRECTED USAGE of dt.now() ---
             click_data.append({
                 "id": str(sid),
                 "title": art.get("title", ""),
@@ -741,26 +739,29 @@ def choice_evaluation2(request):
                 "explore": art.get("explore", False),
                 "source": art.get("source_name") or art.get("clean_url") or "",
                 "topics": topics,
-                "clicked_at": dt.datetime.now(dt.timezone.utc).isoformat(),
+                "clicked_at": dt.now(timezone.utc).isoformat(),  # Use dt.now()
             })
+            # ------------------------------------
 
         total_clicked = len(click_data)
         familiar_count = sum(1 for c in click_data if not c.get("explore"))
         percent_familiar = round(familiar_count / total_clicked * 100, 1) if total_clicked else 0.0
 
+        # --- CORRECTED USAGE of dt.now() ---
         ArticleClick.objects.update_or_create(
             person=person,
             phase=2,
             defaults={
                 "session_id": request.session.session_key or '',
                 "click_data": click_data,
-                "clicked_at": dt.now(dt.timezone.utc),
+                "clicked_at": dt.now(timezone.utc),  # Use dt.now()
                 "phase2_start": phase2_start,
                 "phase2_elapsed": elapsed2,
                 "percent_familiar": percent_familiar,
                 "total_clicked": total_clicked,
             }
         )
+        # ------------------------------------
 
         form = ChoiceEvaluationForm2(request.POST)
         if form.is_valid():
@@ -784,7 +785,6 @@ def choice_evaluation2(request):
     # --- 3) GET Request Logic: Prepare and display the page for the first time ---
     else:
         try:
-            # Assuming get_phase2_feed_custom is the correct function to build the Phase 2 feed
             feed = get_phase2_feed_custom(request, person, days_back=1, page_size=100)
 
             request.session['phase2_articles'] = feed
@@ -804,8 +804,8 @@ def choice_evaluation2(request):
             'form': form,
             'saved_articles_json': json.dumps([]),
         })
-    
-    
+
+
 def generate_redemption_code(length=8):
     # You could adapt this to your needs.
     return ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(length))
