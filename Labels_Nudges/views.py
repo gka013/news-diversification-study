@@ -500,7 +500,7 @@ def choice_evaluation(request):
         if raw_start:
             try:
                 ms = int(raw_start)
-                phase1_start = dt.datetime.fromtimestamp(ms / 1000.0, tz=dt_timezone.utc)
+                phase1_start = dt.fromtimestamp(ms / 1000.0, tz=dt_timezone.utc)
             except:
                 phase1_start = None
 
@@ -708,7 +708,7 @@ def choice_evaluation2(request):
         elapsed2 = int(raw_elapsed) if raw_elapsed and raw_elapsed.isdigit() else None
 
         # --- CORRECTED USAGE: Use 'datetime.fromtimestamp' directly ---
-        phase2_start = datetime.fromtimestamp(int(raw_start) / 1000.0,
+        phase2_start = dt.fromtimestamp(int(raw_start) / 1000.0,
                                               tz=timezone.utc) if raw_start and raw_start.isdigit() else None
         # -------------------------------------------------------------
 
