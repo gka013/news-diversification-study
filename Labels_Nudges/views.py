@@ -11,6 +11,7 @@ from sys import prefix
 from django import forms
 from django.forms import formset_factory
 from django.db.models import Count
+import datetime as dt
 from datetime import datetime as dt, timedelta, timezone
 from datetime import timezone as dt_timezone
 from django.utils import timezone as django_timezone
@@ -499,7 +500,7 @@ def choice_evaluation(request):
         if raw_start:
             try:
                 ms = int(raw_start)
-                phase1_start = dt.fromtimestamp(ms / 1000.0, tz=dt_timezone.utc)
+                phase1_start = dt.datetime.fromtimestamp(ms / 1000.0, tz=dt_timezone.utc)
             except:
                 phase1_start = None
 
@@ -692,7 +693,6 @@ def choice_evaluation2(request):
         return redirect('Labels_Nudges:home')
     person = get_object_or_404(Personal_info, id=pid)
 
-    # Note: The time-check guard should also be here from our previous discussion
     if not person.phase_one_complete:
         return redirect('Labels_Nudges:choice_evaluation')
     if person.phase_two_complete:
@@ -706,11 +706,11 @@ def choice_evaluation2(request):
         raw_elapsed = request.POST.get('phase2_elapsed')
         elapsed2 = int(raw_elapsed) if raw_elapsed and raw_elapsed.isdigit() else None
 
-        # --- THIS IS THE CORRECTED LINE ---
-        # We now use timezone.utc from the standard library
-        phase2_start = dt.fromtimestamp(int(raw_start) / 1000.0,
-                                        tz=dt.timezone.utc) if raw_start and raw_start.isdigit() else None
-        # ------------------------------------
+        # corrected: use dt.datetime.fromtimestamp + dt.timezone.utc
+        phase2_start = (
+            dt.datetime.fromtimestamp(int(raw_start) / 1000.0, tz=dt.timezone.utc)
+            if raw_start and raw_start.isdigit() else None
+        )
 
         raw_saved_articles = request.POST.get('saved_articles', '[]')
         try:
@@ -723,7 +723,10 @@ def choice_evaluation2(request):
         for sid in saved_ids:
             art = next((a for a in phase2_articles if str(a.get('id')) == str(sid)), None)
             if not art:
-                logger.warning("Phase2 clicked id %s not in session feed for person %s. Skipping.", sid, pid)
+                logger.warning(
+                    "Phase2 clicked id %s not in session feed for person %s. Skipping.",
+                    sid, pid
+                )
                 continue
 
             topics = []
@@ -740,12 +743,15 @@ def choice_evaluation2(request):
                 "explore": art.get("explore", False),
                 "source": art.get("source_name") or art.get("clean_url") or "",
                 "topics": topics,
-                "clicked_at": dt.now(dt.timezone.utc).isoformat(),
+                "clicked_at": dt.datetime.now(dt.timezone.utc).isoformat(),
             })
 
         total_clicked = len(click_data)
         familiar_count = sum(1 for c in click_data if not c.get("explore"))
-        percent_familiar = round(familiar_count / total_clicked * 100, 1) if total_clicked else 0.0
+        percent_familiar = (
+            round(familiar_count / total_clicked * 100, 1)
+            if total_clicked else 0.0
+        )
 
         ArticleClick.objects.update_or_create(
             person=person,
@@ -753,7 +759,7 @@ def choice_evaluation2(request):
             defaults={
                 "session_id": request.session.session_key or '',
                 "click_data": click_data,
-                "clicked_at": dt.now(dt.timezone.utc),
+                "clicked_at": dt.datetime.now(dt.timezone.utc),
                 "phase2_start": phase2_start,
                 "phase2_elapsed": elapsed2,
                 "percent_familiar": percent_familiar,
@@ -772,38 +778,31 @@ def choice_evaluation2(request):
             person.redemption_code_phase2 = generate_redemption_code()
             person.save()
             return redirect('Labels_Nudges:ghs_fk2')
-        else:
-            messages.error(request, "There was an error in the form below. Please correct it.")
-            return render(request, "Labels_Nudges/choice_evaluation2.html", {
-                'articles': phase2_articles,
-                'form': form,
-                'saved_articles_json': json.dumps(saved_ids),
-            })
+
+        messages.error(request, "There was an error in the form below. Please correct it.")
+        return render(request, "Labels_Nudges/choice_evaluation2.html", {
+            'articles': phase2_articles,
+            'form': form,
+            'saved_articles_json': json.dumps(saved_ids),
+        })
 
     # --- 3) GET Request Logic: Prepare and display the page for the first time ---
-    else:
-        try:
-            # Assuming get_phase2_feed_custom is the correct function to build the Phase 2 feed
-            feed = get_phase2_feed_custom(request, person, days_back=1, page_size=100)
+    try:
+        feed = get_phase2_feed_custom(request, person, days_back=1, page_size=100)
+        request.session['phase2_articles'] = feed
+        request.session['saved_articles'] = []
+        logger.info(f"Generated Phase 2 feed for person {pid} with {len(feed)} items.")
+    except Exception as e:
+        logger.exception(f"Fatal error building Phase 2 feed for person {pid}: {e}")
+        messages.error(request, "Sorry, we couldn’t load your personalized feed right now.")
+        return redirect('Labels_Nudges:topic_preference')
 
-            request.session['phase2_articles'] = feed
-            request.session['saved_articles'] = []
-
-            logger.info(f"Generated Phase 2 feed for person {pid} with {len(feed)} items.")
-
-        except Exception as e:
-            logger.exception(f"Fatal error building Phase 2 feed for person {pid}: {e}")
-            messages.error(request, "Sorry, we couldn’t load your personalized feed right now.")
-            return redirect('Labels_Nudges:topic_preference')
-
-        form = ChoiceEvaluationForm2()
-
-        return render(request, "Labels_Nudges/choice_evaluation2.html", {
-            'articles': feed,
-            'form': form,
-            'saved_articles_json': json.dumps([]),
-        })
-    
+    form = ChoiceEvaluationForm2()
+    return render(request, "Labels_Nudges/choice_evaluation2.html", {
+        'articles': feed,
+        'form': form,
+        'saved_articles_json': json.dumps([]),
+    })
     
 def generate_redemption_code(length=8):
     # You could adapt this to your needs.
