@@ -11,9 +11,7 @@ from sys import prefix
 from django import forms
 from django.forms import formset_factory
 from django.db.models import Count
-import datetime as dt
-from datetime import timedelta
-from datetime import timezone as dt_timezone
+from datetime import datetime, timedelta, timezone 
 from django.utils import timezone as django_timezone
 from requests.exceptions import HTTPError
 from .recommender import get_phase2_feed_custom
@@ -500,7 +498,7 @@ def choice_evaluation(request):
         if raw_start:
             try:
                 ms = int(raw_start)
-                phase1_start = dt.fromtimestamp(ms / 1000.0, tz=dt_timezone.utc)
+                phase1_start = dt.datetime.fromtimestamp(ms / 1000.0, tz=dt_timezone.utc)
             except:
                 phase1_start = None
 
@@ -707,8 +705,8 @@ def choice_evaluation2(request):
         raw_elapsed = request.POST.get('phase2_elapsed')
         elapsed2 = int(raw_elapsed) if raw_elapsed and raw_elapsed.isdigit() else None
 
-        # --- CORRECTED USAGE: Use 'datetime.fromtimestamp' directly ---
-        phase2_start = dt.fromtimestamp(int(raw_start) / 1000.0,
+        # --- This now works because of the corrected import ---
+        phase2_start = datetime.fromtimestamp(int(raw_start) / 1000.0,
                                               tz=timezone.utc) if raw_start and raw_start.isdigit() else None
         # -------------------------------------------------------------
 
@@ -733,7 +731,6 @@ def choice_evaluation2(request):
             if theme:
                 topics.append(theme)
 
-            # --- CORRECTED USAGE of datetime.now() ---
             click_data.append({
                 "id": str(sid),
                 "title": art.get("title", ""),
@@ -741,29 +738,26 @@ def choice_evaluation2(request):
                 "explore": art.get("explore", False),
                 "source": art.get("source_name") or art.get("clean_url") or "",
                 "topics": topics,
-                "clicked_at": datetime.now(timezone.utc).isoformat(),  # Use datetime.now()
+                "clicked_at": datetime.now(timezone.utc).isoformat(),
             })
-            # ------------------------------------
 
         total_clicked = len(click_data)
         familiar_count = sum(1 for c in click_data if not c.get("explore"))
         percent_familiar = round(familiar_count / total_clicked * 100, 1) if total_clicked else 0.0
 
-        # --- CORRECTED USAGE of datetime.now() ---
         ArticleClick.objects.update_or_create(
             person=person,
             phase=2,
             defaults={
                 "session_id": request.session.session_key or '',
                 "click_data": click_data,
-                "clicked_at": datetime.now(timezone.utc),  # Use datetime.now()
+                "clicked_at": datetime.now(timezone.utc),
                 "phase2_start": phase2_start,
                 "phase2_elapsed": elapsed2,
                 "percent_familiar": percent_familiar,
                 "total_clicked": total_clicked,
             }
         )
-        # ------------------------------------
 
         form = ChoiceEvaluationForm2(request.POST)
         if form.is_valid():
