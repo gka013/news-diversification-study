@@ -255,7 +255,7 @@ def personal_info(request):
             pi.prolific_username = pid
 
             # 4) Generate and save a session_id
-            now = dt.now().strftime('%H%M%S')
+            now = datetime.now().strftime('%H%M%S')
             rnd = ''.join(random.choice(string.ascii_lowercase) for _ in range(5))
             pi.session_id = f'dars{now}_{pid}_{rnd}'
 
@@ -403,7 +403,7 @@ def ghs_fk(request):
             if ghs_fk_form.is_valid():
                 answer = ghs_fk_form.save(commit=False)
                 rd_str = ''.join(random.choice(string.ascii_lowercase) for _ in range(5))
-                time_now = dt.now().strftime('%H%M%S')
+                time_now = datetime.now().strftime('%H%M%S')
                 gene_session = f'dars{time_now}_{answer.id}_{rd_str}'
                 ghs_fk_form.instance.session_id = gene_session
                 ghs_fk_form.instance.person_id = request.session['person_id']
@@ -499,7 +499,7 @@ def choice_evaluation(request):
         if raw_start:
             try:
                 ms = int(raw_start)
-                phase1_start = dt.datetime.fromtimestamp(ms / 1000.0, tz=dt_timezone.utc)
+                phase1_start = datetime.datetime.fromtimestamp(ms / 1000.0, tz=dt_timezone.utc)
             except:
                 phase1_start = None
 
