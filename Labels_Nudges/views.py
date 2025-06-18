@@ -707,8 +707,10 @@ def choice_evaluation2(request):
         raw_elapsed = request.POST.get('phase2_elapsed')
         elapsed2 = int(raw_elapsed) if raw_elapsed and raw_elapsed.isdigit() else None
 
-        phase2_start = dt.fromtimestamp(int(raw_start) / 1000.0,
-                                        tz=timezone.utc) if raw_start and raw_start.isdigit() else None
+        # --- CORRECTED USAGE: Use 'datetime.fromtimestamp' directly ---
+        phase2_start = datetime.fromtimestamp(int(raw_start) / 1000.0,
+                                              tz=timezone.utc) if raw_start and raw_start.isdigit() else None
+        # -------------------------------------------------------------
 
         raw_saved_articles = request.POST.get('saved_articles', '[]')
         try:
@@ -731,7 +733,7 @@ def choice_evaluation2(request):
             if theme:
                 topics.append(theme)
 
-            # --- CORRECTED USAGE of dt.now() ---
+            # --- CORRECTED USAGE of datetime.now() ---
             click_data.append({
                 "id": str(sid),
                 "title": art.get("title", ""),
@@ -739,7 +741,7 @@ def choice_evaluation2(request):
                 "explore": art.get("explore", False),
                 "source": art.get("source_name") or art.get("clean_url") or "",
                 "topics": topics,
-                "clicked_at": dt.now(timezone.utc).isoformat(),  # Use dt.now()
+                "clicked_at": datetime.now(timezone.utc).isoformat(),  # Use datetime.now()
             })
             # ------------------------------------
 
@@ -747,14 +749,14 @@ def choice_evaluation2(request):
         familiar_count = sum(1 for c in click_data if not c.get("explore"))
         percent_familiar = round(familiar_count / total_clicked * 100, 1) if total_clicked else 0.0
 
-        # --- CORRECTED USAGE of dt.now() ---
+        # --- CORRECTED USAGE of datetime.now() ---
         ArticleClick.objects.update_or_create(
             person=person,
             phase=2,
             defaults={
                 "session_id": request.session.session_key or '',
                 "click_data": click_data,
-                "clicked_at": dt.now(timezone.utc),  # Use dt.now()
+                "clicked_at": datetime.now(timezone.utc),  # Use datetime.now()
                 "phase2_start": phase2_start,
                 "phase2_elapsed": elapsed2,
                 "percent_familiar": percent_familiar,
