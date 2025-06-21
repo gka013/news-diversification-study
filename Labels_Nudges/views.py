@@ -894,7 +894,7 @@ def ghs_fk2(request):
 # ── Configure your two “complete” URLs here ────────────────────────
 COMPLETION_LINKS = {
     1: "https://app.prolific.com/submissions/complete?cc=C11ZJVQL",  # Phase 1 completion code
-    2: "https://app.prolific.com/submissions/complete?cc=CR7K18NX"  # Phase 2 completion code
+    2: "https://app.prolific.com/submissions/complete?cc=C11AW6WK"  # Phase 2 completion code
 }
 # ─────────────────────────────────────────────────────────────────
 
