@@ -32,7 +32,7 @@ We collected:
 Short-term increases in feed–profile similarity can enhance familiarity and maintain behavioral engagement (i.e., clicks). However, they do not lead to higher levels of perceived quality and choice satisfaction — raising doubts about the relationship between preference-based similarity and user satisfaction.  
 
 ## 📂 Repository Structure  
-- `Labels_Nudges/` — Labeling strategies and nudging experiments  
+- `Labels_Nudges/` — Labeling strategies experiments  
 - `management/commands/` — Scripts for running management tasks  
 - `migrations/` — Database migration files  
 - `admin.py`, `app.py`, `apps.py` — Django app setup  
@@ -43,7 +43,7 @@ Short-term increases in feed–profile similarity can enhance familiarity and ma
 
 ---
 
-## 🚀 Installation  
+## Installation  
 Clone the repository and install dependencies:  
 ```bash
 git clone https://github.com/yourusername/news-diversification-study.git
